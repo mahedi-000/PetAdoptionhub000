@@ -1,0 +1,97 @@
+-- USERS
+CREATE TABLE users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100) UNIQUE,
+  phone VARCHAR(15),
+  role ENUM('adopter', 'admin')
+);
+
+-- SHELTERS
+CREATE TABLE shelters (
+  shelter_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  location VARCHAR(255),
+  contact VARCHAR(100)
+);
+
+-- PETS
+CREATE TABLE pets (
+  pet_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  type VARCHAR(50),
+  breed VARCHAR(100),
+  age INT,
+  gender VARCHAR(10),
+  status ENUM('Available', 'Adopted') DEFAULT 'Available',
+  shelter_id INT,
+  FOREIGN KEY (shelter_id) REFERENCES shelters(shelter_id)
+);
+
+-- ADOPTIONS
+CREATE TABLE adoptions (
+  adoption_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  pet_id INT,
+  date DATE,
+  status VARCHAR(50),
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+);
+
+-- APPOINTMENTS
+CREATE TABLE appointments (
+  appointment_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  pet_id INT,
+  datetime DATETIME,
+  notes TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+);
+
+-- REVIEWS
+CREATE TABLE reviews (
+  review_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  shelter_id INT,
+  rating INT CHECK (rating BETWEEN 1 AND 5),
+  comment TEXT,
+  date DATE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (shelter_id) REFERENCES shelters(shelter_id)
+);
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import PetsList from "./components/PetsList";
+import UsersList from "./components/UsersList";
+import SheltersList from "./components/SheltersList";
+import AdoptionsList from "./components/AdoptionsList";
+import AppointmentsList from "./components/AppointmentsList";
+import ReviewsList from "./components/ReviewsList";
+
+export default function App() {
+  return (
+    <Router>
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-4">🐾 PetAdoptHub Dashboard</h1>
+        <nav className="space-x-4 mb-6">
+          <Link to="/">Pets</Link>
+          <Link to="/users">Users</Link>
+          <Link to="/shelters">Shelters</Link>
+          <Link to="/adoptions">Adoptions</Link>
+          <Link to="/appointments">Appointments</Link>
+          <Link to="/reviews">Reviews</Link>
+        </nav>
+        <Routes>
+          <Route path="/" element={<PetsList />} />
+          <Route path="/users" element={<UsersList />} />
+          <Route path="/shelters" element={<SheltersList />} />
+          <Route path="/adoptions" element={<AdoptionsList />} />
+          <Route path="/appointments" element={<AppointmentsList />} />
+          <Route path="/reviews" element={<ReviewsList />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
